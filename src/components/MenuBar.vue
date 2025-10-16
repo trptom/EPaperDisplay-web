@@ -31,7 +31,7 @@ watch(
     <div class="container-fluid">
       <RouterLink class="navbar-brand d-flex align-items-center" to="/">
         <img :src="logoUrl" alt="logo" height="38" />
-        <span class="ms-2">EPaper</span>
+        <span class="ms-2">EPaperDisplay</span>
       </RouterLink>
 
       <button
@@ -49,15 +49,18 @@ watch(
       <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <RouterLink class="nav-link" to="/">{{ t('header.home') }}</RouterLink>
+            <RouterLink class="nav-link" to="/">{{ t('menuBar.home') }}</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link" to="/about">{{ t('header.about') }}</RouterLink>
+            <RouterLink class="nav-link" to="/about">{{ t('menuBar.about') }}</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/signin">{{ t('menuBar.signin') }}</RouterLink>
           </li>
         </ul>
 
         <form class="d-flex align-items-center">
-          <label for="lang" class="me-2 mb-0 small">{{ t('lang.label') }}:</label>
+          <label for="lang" class="me-2 mb-0 small">{{ t('menuBar.lang') }}:</label>
           <select id="lang" class="form-select form-select-sm" v-model="lang" @change="changeLang">
             <option value="en">English</option>
             <option value="cs">Čeština</option>
