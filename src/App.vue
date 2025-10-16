@@ -2,7 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { useI18n } from 'vue-i18n'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const { t, locale } = useI18n()
 const lang = ref(locale.value)
@@ -11,7 +11,20 @@ function changeLang(e: Event) {
   const val = (e.target as HTMLSelectElement).value
   locale.value = val
   lang.value = val
+  try {
+    localStorage.setItem('locale', val)
+  } catch {
+    console.error('Cannot access localStorage')
+  }
 }
+
+// Keep lang in sync if locale is changed elsewhere
+watch(
+  () => locale.value,
+  (v: string) => {
+    lang.value = v
+  },
+)
 </script>
 
 <template>
@@ -30,7 +43,7 @@ function changeLang(e: Event) {
         <label for="lang">{{ t('lang.label') }}:</label>
         <select id="lang" v-model="lang" @change="changeLang">
           <option value="en">English</option>
-          <option value="pl">Polski</option>
+          <option value="cs">Čeština</option>
         </select>
       </div>
     </div>
