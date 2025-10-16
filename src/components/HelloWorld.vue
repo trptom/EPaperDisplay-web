@@ -1,17 +1,24 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const props = defineProps<{
   msg: string
 }>()
+
+const { t } = useI18n()
+
+const descriptionHtml = computed(() => {
+  const vite = '<a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a>'
+  const vue = '<a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>'
+  return t('hello.description', { vite, vue })
+})
 </script>
 
 <template>
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>. What's next?
-    </h3>
+    <h1 class="green">{{ props.msg }}</h1>
+    <h3 v-html="descriptionHtml"></h3>
   </div>
 </template>
 

@@ -1,19 +1,38 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { useI18n } from 'vue-i18n'
+import { ref } from 'vue'
+
+const { t, locale } = useI18n()
+const lang = ref(locale.value)
+
+function changeLang(e: Event) {
+  const val = (e.target as HTMLSelectElement).value
+  locale.value = val
+  lang.value = val
+}
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img :alt="t('hello.title')" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <HelloWorld :msg="t('hello.title')" />
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">{{ t('header.home') }}</RouterLink>
+        <RouterLink to="/about">{{ t('header.about') }}</RouterLink>
       </nav>
+
+      <div class="lang-select">
+        <label for="lang">{{ t('lang.label') }}:</label>
+        <select id="lang" v-model="lang" @change="changeLang">
+          <option value="en">English</option>
+          <option value="pl">Polski</option>
+        </select>
+      </div>
     </div>
   </header>
 
