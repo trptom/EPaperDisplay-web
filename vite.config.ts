@@ -5,14 +5,30 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+export default defineConfig(({ command }) => ({
+  plugins: [vue(), vueDevTools()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-})
+  server:
+    command === 'serve'
+      ? {
+          proxy: {
+            // Proxy everything to the backend during development.
+            '/auth': {
+              target: 'http://localhost:8000',
+              changeOrigin: true,
+              secure: false,
+              ws: true,
+              cookieDomainRewrite: 'localhost',
+              cookiePathRewrite: '/',
+              // Keep the path as-is. If your backend expects a base prefix, add
+              // a `rewrite` here.
+              // rewrite: (path) => path,
+            },
+          },
+        }
+      : undefined,
+}))

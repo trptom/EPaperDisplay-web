@@ -1,9 +1,12 @@
 export default {
   menuBar: {
+    toggle: 'Toggle navigation bar',
     home: 'Home',
     about: 'About',
     signin: 'Sign In',
-    lang: 'Language',
+    signinGoogle: 'Sign in with Google',
+    signinFacebook: 'Sign in with Facebook',
+    signout: 'Sign Out',
   },
   signIn: {
     title: 'Sign In',
@@ -12,11 +15,7 @@ export default {
     remember: 'Remember me',
     noAccount: "Don't have an account?",
 
-    or: 'Or',
-
     button: {
-      google: 'Sign in with Google',
-      facebook: 'Sign in with Facebook',
       loading: 'Signing in...',
       submit: 'Sign In',
       signUp: 'Sign Up',
@@ -24,6 +23,5 @@ export default {
 
     error: 'Sign in failed',
     errorFillAll: 'Email and password are required',
-    errorProvider: 'Sign in with provider failed',
   },
 }

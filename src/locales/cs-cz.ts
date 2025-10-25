@@ -1,9 +1,12 @@
 export default {
   menuBar: {
+    toggle: 'Přepnout navigační lištu',
     home: 'Domů',
     about: 'O projektu',
-    signin: 'Přihlásení',
-    lang: 'Jazyk',
+    signin: 'Přihlášení',
+    signinGoogle: 'Přihlásit se přes Google',
+    signinFacebook: 'Přihlásit se přes Facebook',
+    signout: 'Odhlášení',
   },
   signIn: {
     title: 'Přihlásit se',
@@ -12,11 +15,7 @@ export default {
     remember: 'Zapamatovat si mě',
     noAccount: 'Nemáte účet?',
 
-    or: 'Nebo',
-
     button: {
-      google: 'Přihlásit se přes Google',
-      facebook: 'Přihlásit se přes Facebook',
       loading: 'Probíhá přihlášení...',
       submit: 'Přihlásit se',
       signUp: 'Zaregistrovat se',
@@ -24,6 +23,5 @@ export default {
 
     error: 'Přihlášení se nezdařilo',
     errorFillAll: 'Je nutné vyplnit e-mail a heslo',
-    errorProvider: 'Přihlášení přes poskytovatele se nezdařilo',
   },
 }

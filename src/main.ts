@@ -1,6 +1,5 @@
 // Bootstrap CSS (import first so project styles can override it)
 import 'bootstrap/dist/css/bootstrap.min.css'
-// Optional: Bootstrap JS (requires Popper for some components). Uncomment if you use JS components.
 import 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import './assets/css/main.css'

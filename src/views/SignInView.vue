@@ -13,25 +13,6 @@ const remember = ref(false)
 const loading = ref(false)
 const error = ref('')
 
-const signInWithProvider = async (provider: 'google' | 'facebook') => {
-  loading.value = true
-  error.value = ''
-  try {
-    // TODO: replace with real OAuth integration
-    console.log(`Sign in with ${provider}`)
-    // simulate network delay
-    await new Promise((r) => setTimeout(r, 600))
-    // on success navigate home (adjust route name if needed)
-    router.push({ name: 'Home' }).catch(() => {})
-  } catch (e) {
-    // log for diagnostics
-    console.error(e)
-    error.value = t('signIn.errorProvider')
-  } finally {
-    loading.value = false
-  }
-}
-
 const signInWithCredentials = async () => {
   error.value = ''
   if (!email.value || !password.value) {
@@ -45,7 +26,6 @@ const signInWithCredentials = async () => {
     await new Promise((r) => setTimeout(r, 600))
     router.push({ name: 'Home' }).catch(() => {})
   } catch (e) {
-    // log for diagnostics
     console.error(e)
     error.value = t('signIn.error')
   } finally {
@@ -57,17 +37,6 @@ const signInWithCredentials = async () => {
 <template>
   <div class="sign-in">
     <h1>{{ t('signIn.title') }}</h1>
-
-    <div class="providers">
-      <button class="btn google" @click="signInWithProvider('google')" :disabled="loading">
-        {{ t('signIn.button.google') }}
-      </button>
-      <button class="btn facebook" @click="signInWithProvider('facebook')" :disabled="loading">
-        {{ t('signIn.button.facebook') }}
-      </button>
-    </div>
-
-    <div class="or">{{ t('signIn.or') }}</div>
 
     <form @submit.prevent="signInWithCredentials" class="credentials">
       <label>
@@ -108,11 +77,6 @@ const signInWithCredentials = async () => {
   background: var(--card-bg, #fff);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
-.providers {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
 .btn {
   padding: 10px 14px;
   border-radius: 6px;
@@ -123,20 +87,6 @@ const signInWithCredentials = async () => {
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-.google {
-  background: #fff;
-  border-color: #ddd;
-}
-.facebook {
-  background: #3b5998;
-  color: #fff;
-  border-color: #3b5998;
-}
-.or {
-  text-align: center;
-  margin: 12px 0;
-  color: #666;
 }
 .credentials label {
   display: block;
