@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import MenuBar from './components/MenuBar.vue'
+import FullscreenLoader from '@/components/FullscreenLoader.vue'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted } from 'vue'
@@ -16,6 +17,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <FullscreenLoader />
   <template v-if="initialized">
     <MenuBar />
 
