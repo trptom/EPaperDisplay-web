@@ -8,7 +8,16 @@ let userStore: null | ReturnType<typeof useUserStore> = null
  * Base class for all services.
  */
 export default abstract class Service {
-  public readonly SERVER_URL = (import.meta.env.VITE_SERVER_URL ?? '') as string
+  private readonly SERVER_URL = (import.meta.env.VITE_SERVER_URL ?? '') as string
+
+  /**
+   * Get the server base URL. You can override this method in subclasses
+   * to provide different server URLs for different services.
+   * @returns The server base URL.
+   */
+  protected getServerUrl() {
+    return this.SERVER_URL
+  }
 
   /**
    * Get the full URL for a given API path.
@@ -17,7 +26,7 @@ export default abstract class Service {
    * @see VITE_SERVER_URL environment variable
    */
   protected getUrl(path: string): string {
-    const base = this.SERVER_URL.replace(/\/$/, '')
+    const base = this.getServerUrl().replace(/\/$/, '')
     const p = path.replace(/^\//, '')
     return `${base}/${p}`
   }
