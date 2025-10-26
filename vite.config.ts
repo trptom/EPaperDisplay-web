@@ -14,21 +14,29 @@ export default defineConfig(({ command }) => ({
   },
   server:
     command === 'serve'
-      ? {
-          proxy: {
-            // Proxy everything to the backend during development.
-            '/auth': {
-              target: 'http://localhost:8000',
-              changeOrigin: true,
-              secure: false,
-              ws: true,
-              cookieDomainRewrite: 'localhost',
-              cookiePathRewrite: '/',
-              // Keep the path as-is. If your backend expects a base prefix, add
-              // a `rewrite` here.
-              // rewrite: (path) => path,
+      ? (() => {
+          // shared proxy options for backend routes used during development
+          const backendProxy = {
+            target: 'http://localhost:8000',
+            changeOrigin: true,
+            secure: false,
+            ws: true,
+            cookieDomainRewrite: 'localhost',
+            cookiePathRewrite: '/',
+            // Keep the path as-is. If your backend expects a base prefix, add
+            // a `rewrite` here.
+            // rewrite: (path: string) => path,
+          }
+
+          return {
+            proxy: {
+              '/ws': {
+                ...backendProxy,
+                // rewrite removes the leading /ws so /ws/foo -> /foo on the backend
+                rewrite: (path: string) => path.replace(/^\/ws/, ''),
+              },
             },
-          },
-        }
+          }
+        })()
       : undefined,
 }))
