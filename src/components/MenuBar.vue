@@ -59,6 +59,9 @@ watch(
           <li class="nav-item">
             <RouterLink class="nav-link" to="/about">{{ t('menuBar.about') }}</RouterLink>
           </li>
+          <li class="nav-item" v-if="isLoggedIn">
+            <RouterLink class="nav-link" to="/displays">{{ t('menuBar.displays') }}</RouterLink>
+          </li>
         </ul>
 
         <div class="d-flex align-items-center me-3" v-if="!isLoggedIn">

@@ -7,6 +7,7 @@ export default {
     signinGoogle: 'Přihlásit se přes Google',
     signinFacebook: 'Přihlásit se přes Facebook',
     signout: 'Odhlášení',
+    displays: 'Displeje',
   },
   signIn: {
     title: 'Přihlásit se',

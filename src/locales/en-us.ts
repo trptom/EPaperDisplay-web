@@ -7,6 +7,7 @@ export default {
     signinGoogle: 'Sign in with Google',
     signinFacebook: 'Sign in with Facebook',
     signout: 'Sign Out',
+    displays: 'Displays',
   },
   signIn: {
     title: 'Sign In',
