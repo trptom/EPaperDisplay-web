@@ -2,6 +2,9 @@
 import { ref, onMounted } from 'vue'
 import DisplayService, { type Display } from '@/services/DisplayService'
 import router from '@/router'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const displays = ref<Display[]>([])
 const loading = ref(false)
@@ -46,13 +49,13 @@ onMounted(() => {
   <div class="container mt-5 pt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
-        <h1 class="mb-0">Displays</h1>
-        <small class="text-muted">List and manage your displays</small>
+        <h1 class="mb-0">{{ t('displays.header') }}</h1>
+        <small class="text-muted">{{ t('displays.subheader') }}</small>
       </div>
       <div>
         <button class="btn btn-outline-secondary me-2" @click="addDisplay" :disabled="loading">
           <i class="bi bi-arrow-clockwise"></i>
-          Add
+          {{ t('displays.add') }}
         </button>
       </div>
     </div>
@@ -64,25 +67,25 @@ onMounted(() => {
         aria-hidden="true"
         style="width: 3rem; height: 3rem"
       ></div>
-      <div class="mt-3 text-muted">Loading displays…</div>
+      <div class="mt-3 text-muted">{{ t('displays.loading') }}</div>
     </div>
 
     <div v-else>
-      <div v-if="error" class="alert alert-danger">{{ error }}</div>
+      <div v-if="error" class="alert alert-danger">{{ t('displays.error') }}</div>
 
-      <div v-if="displays.length === 0" class="alert alert-info">No displays found.</div>
+      <div v-if="displays.length === 0" class="alert alert-info">{{ t('displays.notFound') }}</div>
 
       <div v-else class="table-responsive">
         <table class="table table-striped table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Model</th>
-              <th>Size</th>
-              <th>IP Filter</th>
-              <th>Token</th>
-              <th>Displayed</th>
+              <th>{{ t('displays.table.header.id') }}</th>
+              <th>{{ t('displays.table.header.name') }}</th>
+              <th>{{ t('displays.table.header.model') }}</th>
+              <th>{{ t('displays.table.header.size') }}</th>
+              <th>{{ t('displays.table.header.ipFilter') }}</th>
+              <th>{{ t('displays.table.header.token') }}</th>
+              <th>{{ t('displays.table.header.displayed') }}</th>
             </tr>
           </thead>
           <transition-group name="list" tag="tbody">
@@ -95,7 +98,9 @@ onMounted(() => {
               <td>{{ d.width }} × {{ d.height }}</td>
               <td>
                 <span class="badge" :class="d.ip_filter ? 'bg-success' : 'bg-secondary'">
-                  {{ d.ip_filter ? 'Enabled' : 'Disabled' }}
+                  {{
+                    t('displays.table.content.ipFilter.' + (d.ip_filter ? 'enabled' : 'disabled'))
+                  }}
                 </span>
               </td>
               <td>

@@ -9,6 +9,31 @@ export default {
     signout: 'Sign Out',
     displays: 'Displays',
   },
+  displays: {
+    header: 'Displays',
+    subheader: 'List and manage your displays',
+    add: 'Add',
+    loading: 'Loading displays…',
+    error: 'Unable to load list of displays.',
+    notFound: 'No displays found.',
+    table: {
+      header: {
+        id: 'ID',
+        name: 'Name',
+        model: 'Model',
+        size: 'Size',
+        ipFilter: 'IP Filter',
+        token: 'Token',
+        displayed: 'Displayed',
+      },
+      content: {
+        ipFilter: {
+          enabled: 'Enabled',
+          disabled: 'Disabled',
+        },
+      },
+    },
+  },
   signIn: {
     title: 'Sign In',
     email: 'Email',

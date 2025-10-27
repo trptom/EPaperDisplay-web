@@ -9,6 +9,31 @@ export default {
     signout: 'Odhlášení',
     displays: 'Displeje',
   },
+  displays: {
+    header: 'Displeje',
+    subheader: 'Seznam a správa vašich displejů',
+    add: 'Přidat',
+    loading: 'Načítám seznam displejů…',
+    error: 'Nepodařilo se načíst seznam displejů.',
+    notFound: 'Žádné displeje nenalezeny.',
+    table: {
+      header: {
+        id: 'ID',
+        name: 'Název',
+        model: 'Model',
+        size: 'Velikost',
+        ipFilter: 'IP Filtr',
+        token: 'Token',
+        displayed: 'Zobrazeno',
+      },
+      content: {
+        ipFilter: {
+          enabled: 'Povoleno',
+          disabled: 'Zakázáno',
+        },
+      },
+    },
+  },
   signIn: {
     title: 'Přihlásit se',
     email: 'E-mail',
