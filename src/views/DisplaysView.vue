@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import DisplayService, { type Display } from '@/services/DisplayService'
+import router from '@/router'
 
 const displays = ref<Display[]>([])
 const loading = ref(false)
@@ -28,6 +29,12 @@ async function addDisplay() {
   } else {
     displays.value.push(display)
   }
+}
+
+function onRowClicked(display: Display) {
+  router.push({ name: 'display', params: { id: String(display.id) } }).catch((e) => {
+    console.error('Failed to navigate to display detail view:', e)
+  })
 }
 
 onMounted(() => {
@@ -74,11 +81,12 @@ onMounted(() => {
               <th>Model</th>
               <th>Size</th>
               <th>IP Filter</th>
+              <th>Token</th>
               <th>Displayed</th>
             </tr>
           </thead>
           <transition-group name="list" tag="tbody">
-            <tr v-for="d in displays" :key="d.id">
+            <tr v-for="d in displays" :key="d.id" @click="onRowClicked(d)" style="cursor: pointer">
               <td class="text-break">
                 <small>{{ d.id }}</small>
               </td>
@@ -89,6 +97,9 @@ onMounted(() => {
                 <span class="badge" :class="d.ip_filter ? 'bg-success' : 'bg-secondary'">
                   {{ d.ip_filter ? 'Enabled' : 'Disabled' }}
                 </span>
+              </td>
+              <td>
+                <small class="text-break" :title="d.token">{{ d.token.substring(0, 25) }}...</small>
               </td>
               <td>
                 <small class="text-muted">{{ d.displayed }}</small>
