@@ -1,4 +1,7 @@
 export default {
+  modal: {
+    image: {},
+  },
   menuBar: {
     toggle: 'Toggle navigation bar',
     home: 'Home',
@@ -51,6 +54,23 @@ export default {
           disabled: 'Disabled',
         },
       },
+    },
+  },
+  display: {
+    header: 'Display Settings',
+    subheader: {
+      id: 'ID',
+      token: 'Token',
+    },
+    btn: {
+      view: 'Preview',
+      save: 'Save',
+    },
+    loading: 'Loading display…',
+    error: 'Unable to load display.',
+    control: {
+      id: 'ID',
+      name: 'Name',
     },
   },
   signIn: {

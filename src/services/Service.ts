@@ -25,7 +25,7 @@ export default abstract class Service {
    * @returns The full URL (e.g. 'https://api.example.com/users')
    * @see VITE_SERVER_URL environment variable
    */
-  protected getUrl(path: string): string {
+  public getUrl(path: string): string {
     const base = this.getServerUrl().replace(/\/$/, '')
     const p = path.replace(/^\//, '')
     return `${base}/${p}`

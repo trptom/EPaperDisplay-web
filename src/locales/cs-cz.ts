@@ -1,4 +1,7 @@
 export default {
+  modal: {
+    image: {},
+  },
   menuBar: {
     toggle: 'Přepnout navigační lištu',
     home: 'Domů',
@@ -51,6 +54,24 @@ export default {
           disabled: 'Zakázáno',
         },
       },
+    },
+  },
+  display: {
+    header: 'Nastavení displeje',
+    subheader: {
+      id: 'ID',
+      token: 'Token',
+    },
+    btn: {
+      view: 'Náhled',
+      save: 'Uložit',
+    },
+    loading: 'Načítám displej…',
+    error: 'Nepodařilo se načíst displej.',
+    control: {
+      name: 'Název',
+      resolution: 'Rozlišení',
+      model: 'Model',
     },
   },
   signIn: {

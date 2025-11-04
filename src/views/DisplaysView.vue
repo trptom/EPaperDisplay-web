@@ -117,25 +117,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-.container {
-  max-width: 960px;
-}
-
-/* simple enter/leave animation for table rows */
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-.list-enter-active,
-.list-leave-active {
-  transition: all 220ms ease;
-}
-
-/* improve spinner visibility */
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
-}
-</style>
+<style scoped></style>
