@@ -1,6 +1,21 @@
 export default {
   modal: {
     image: {},
+    displayModule: {},
+  },
+  components: {
+    moduleListTable: {
+      noModules: 'Žádné moduly nejsou definovány.',
+      title: 'Moduly',
+      add: 'Přidat',
+      delete: 'Smazat',
+      edit: 'Upravit',
+      colName: {
+        position: 'Pozice',
+        type: 'Typ',
+        actions: 'Akce',
+      },
+    },
   },
   menuBar: {
     toggle: 'Přepnout navigační lištu',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import DisplayComponent from '@/components/DisplayComponent.vue'
+import ModuleListTable from '@/components/ModuleListTable.vue'
 import ImageModal from '@/components/modals/ImageModal.vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -51,12 +52,9 @@ async function loadDisplay(id?: number) {
     const data = await DisplayService.get(id)
     display.value = data ?? null
     if (display.value) {
-      // map existing modules to rectangles shape if present, otherwise create a default rectangle array
-      if (Array.isArray(display.value.modules) && display.value.modules.length > 0) {
-        modules.value = display.value.modules
-      } else {
-        modules.value = []
-      }
+      // ensure modules array exists and sync
+      if (!Array.isArray(display.value.modules)) display.value.modules = []
+      modules.value = display.value.modules
     }
   } catch (e: unknown) {
     console.error(e)
@@ -87,6 +85,41 @@ function syncRectangles(r: DisplayModule[]): void {
   modules.value = r
   if (display.value) {
     display.value.modules = r
+  }
+}
+
+function updateModulesFromTable(r: DisplayModule[]) {
+  modules.value = r
+  if (display.value) display.value.modules = r
+  changed.value = true
+}
+
+function addModule() {
+  // create a default module object with next position
+  const pos = modules.value.length > 0 ? Math.max(...modules.value.map((m) => m.position ?? 0)) + 1 : 1
+  const m: DisplayModule = {
+    position: pos,
+    type: 1,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    border: 0,
+    data: undefined,
+  }
+  modules.value.push(m)
+  if (display.value) display.value.modules = modules.value
+  changed.value = true
+}
+
+function removeModule(pos: number) {
+  const idx = modules.value.findIndex((m) => (m.position ?? -1) === pos)
+  if (idx >= 0) {
+    modules.value.splice(idx, 1)
+    // reassign positions to maintain stable positions (optional)
+    modules.value = modules.value.map((m, i) => ({ ...m, position: i + 1 }))
+    if (display.value) display.value.modules = modules.value
+    changed.value = true
   }
 }
 
@@ -174,6 +207,13 @@ onMounted(() => {
           />
         </div>
       </div>
+      <ModuleListTable
+        :modules="modules"
+        @update:modules="updateModulesFromTable"
+        @add-module="addModule"
+        @remove-module="removeModule"
+      />
+
       <div class="card d-flex flex-row justify-content-center align-items-center mb-3">
         <div class="display">
           <DisplayComponent

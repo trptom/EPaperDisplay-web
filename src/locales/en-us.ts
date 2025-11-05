@@ -1,6 +1,21 @@
 export default {
   modal: {
     image: {},
+    displayModule: {},
+  },
+  components: {
+    moduleListTable: {
+      noModules: 'No modules defined.',
+      title: 'Modules',
+      add: 'Add new',
+      delete: 'Delete',
+      edit: 'Edit',
+      colName: {
+        position: 'Position',
+        type: 'Type',
+        actions: 'Actions',
+      },
+    },
   },
   menuBar: {
     toggle: 'Toggle navigation bar',

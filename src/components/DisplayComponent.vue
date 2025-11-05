@@ -259,8 +259,8 @@ watch(
       @pointerdown.stop.prevent="startDrag($event, module)"
       @click.stop="onRectClick(module, idx)"
     >
-      <div class="rect-image" :style="{ backgroundImage: `url(${moduleBG})` }">
-        <div class="rect-text" :style="innerStyle(module)" v-html="moduleText"></div>
+      <div class="rect-image" :style="{ backgroundImage: `url(${moduleBG(module)})` }">
+        <div class="rect-text" :style="innerStyle(module)" v-html="moduleText(module)"></div>
       </div>
 
       <!-- resize handles -->
