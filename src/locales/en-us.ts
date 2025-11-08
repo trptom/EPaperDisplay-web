@@ -1,7 +1,37 @@
 export default {
+  general: {
+    moduleTypes: {
+      1: 'Image',
+      2: 'Text',
+      3: 'Weather',
+      4: 'Calendar',
+    },
+  },
   modal: {
     image: {},
-    displayModule: {},
+    displayModule: {
+      title: 'Module Settings',
+      noModule: 'No module selected',
+      type: 'Module Type',
+      position: 'Position',
+      size: 'Size',
+      btn: {
+        save: 'Save Changes',
+        cancel: 'Cancel',
+      },
+      staticImage: {
+        url: 'URL',
+      },
+      simpleText: {
+        text: 'Text',
+      },
+      calendar: {
+        date: 'Datum',
+      },
+      weather: {
+        location: 'Místo',
+      },
+    },
   },
   components: {
     moduleListTable: {
@@ -11,8 +41,9 @@ export default {
       delete: 'Delete',
       edit: 'Edit',
       colName: {
-        position: 'Position',
+        position: '#',
         type: 'Type',
+        area: 'Position',
         actions: 'Actions',
       },
     },

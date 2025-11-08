@@ -38,7 +38,7 @@ export type ModuleData =
   | ModuleData_StaticImage
   | ModuleData_SimpleText
   | ModuleData_Weather
-  | ModuleDataCalendar
+  | ModuleData_Calendar
 
 export type ModuleData_StaticImage = {
   url: string
@@ -59,9 +59,9 @@ export type ModuleData_Weather = {
   units: 'metric' | 'imperial'
 }
 
-export type ModuleDataCalendar = {
-  publicUrl: string
-  eventsCount: string
+export type ModuleData_Calendar = {
+  iCalUrl: string
+  itemsCount: number
 }
 
 class DisplayService extends Service {

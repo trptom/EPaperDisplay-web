@@ -13,7 +13,7 @@ const emit = defineEmits<{
   (e: 'update:modules', val: DisplayModule[]): void
   (e: 'add-module'): void
   (e: 'remove-module', pos: number): void
-  (e: 'moduleClicked', id: number, module: DisplayModule): void
+  (e: 'edit-module', id: number, module: DisplayModule): void
 }>()
 
 const dragIndex = ref<number | null>(null)
@@ -55,7 +55,7 @@ function removeModule(pos: number) {
 }
 
 function editModule(id: number, moduleObj: DisplayModule) {
-  emit('moduleClicked', id, moduleObj)
+  emit('edit-module', id, moduleObj)
 }
 </script>
 
@@ -74,6 +74,7 @@ function editModule(id: number, moduleObj: DisplayModule) {
           <tr>
             <th>{{ t('components.moduleListTable.colName.position') }}</th>
             <th>{{ t('components.moduleListTable.colName.type') }}</th>
+            <th>{{ t('components.moduleListTable.colName.area') }}</th>
             <th>{{ t('components.moduleListTable.colName.actions') }}</th>
           </tr>
         </thead>
@@ -87,7 +88,8 @@ function editModule(id: number, moduleObj: DisplayModule) {
             @drop="onDrop($event, idx)"
           >
             <td>{{ m.position }}</td>
-            <td>{{ m.type }}</td>
+            <td>{{ t(`general.moduleTypes.${m.type}`) }}</td>
+            <td>{{ `${m.x};${m.y}, ${m.width}x${m.height}` }}</td>
             <td>
               <button
                 class="btn btn-sm btn-outline-secondary me-1"

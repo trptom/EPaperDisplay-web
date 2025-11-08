@@ -5,8 +5,8 @@ import ModuleListTable from '@/components/ModuleListTable.vue'
 import ImageModal from '@/components/modals/ImageModal.vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import type { Display, DisplayModule } from '@/services/DisplayService'
-import DisplayService from '@/services/DisplayService'
+import type { Display, DisplayModule, ModuleData_SimpleText } from '@/services/DisplayService'
+import DisplayService, { DisplayModuleType } from '@/services/DisplayService'
 import DisplayModuleSettingsModal from '@/components/modals/DisplayModuleSettingsModal.vue'
 
 const { t } = useI18n()
@@ -34,6 +34,24 @@ function openImageModal(url: string) {
 function openModuleModal(module: DisplayModule) {
   moduleData.value = module
   showModuleModal.value = true
+}
+
+function onModuleChanged(updated: DisplayModule | null) {
+  // Update modules list and display when the modal emits changes
+  if (!updated) return
+
+  const idx = modules.value.findIndex((m) => (m.position ?? -1) === (updated.position ?? -1))
+  if (idx >= 0) {
+    // replace the existing module with the updated one
+    modules.value.splice(idx, 1, updated)
+  } else {
+    // not found -> append
+    modules.value.push(updated)
+  }
+
+  if (display.value) display.value.modules = modules.value
+  moduleData.value = updated
+  changed.value = true
 }
 
 async function loadDisplay(id?: number) {
@@ -96,16 +114,24 @@ function updateModulesFromTable(r: DisplayModule[]) {
 
 function addModule() {
   // create a default module object with next position
-  const pos = modules.value.length > 0 ? Math.max(...modules.value.map((m) => m.position ?? 0)) + 1 : 1
+  const pos =
+    modules.value.length > 0 ? Math.max(...modules.value.map((m) => m.position ?? 0)) + 1 : 1
+  const data: ModuleData_SimpleText = {
+    text: '',
+    alignment_x: 'left',
+    alignment_y: 'top',
+    font_family: 'Arial',
+    font_size: 16,
+  }
   const m: DisplayModule = {
     position: pos,
-    type: 1,
+    type: DisplayModuleType.SimpleText,
     x: 0,
     y: 0,
     width: 100,
     height: 100,
     border: 0,
-    data: undefined,
+    data: data,
   }
   modules.value.push(m)
   if (display.value) display.value.modules = modules.value
@@ -212,6 +238,7 @@ onMounted(() => {
         @update:modules="updateModulesFromTable"
         @add-module="addModule"
         @remove-module="removeModule"
+        @edit-module="setModule"
       />
 
       <div class="card d-flex flex-row justify-content-center align-items-center mb-3">
@@ -231,6 +258,7 @@ onMounted(() => {
       v-model="showModuleModal"
       :module="moduleData"
       title="Module Settings"
+      @changed="onModuleChanged"
     />
   </div>
 </template>

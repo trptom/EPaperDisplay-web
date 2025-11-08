@@ -1,7 +1,37 @@
 export default {
+  general: {
+    moduleTypes: {
+      1: 'Obrázek',
+      2: 'Text',
+      3: 'Počasí',
+      4: 'Kalendář',
+    },
+  },
   modal: {
     image: {},
-    displayModule: {},
+    displayModule: {
+      title: 'Nastavení modulu',
+      noModule: 'Žádný modul není vybrán',
+      type: 'Typ modulu',
+      position: 'Pozice',
+      size: 'Velikost',
+      btn: {
+        save: 'Uložit změny',
+        cancel: 'Zrušit',
+      },
+      staticImage: {
+        url: 'URL',
+      },
+      simpleText: {
+        text: 'Text',
+      },
+      calendar: {
+        date: 'Datum',
+      },
+      weather: {
+        location: 'Místo',
+      },
+    },
   },
   components: {
     moduleListTable: {
@@ -11,8 +41,9 @@ export default {
       delete: 'Smazat',
       edit: 'Upravit',
       colName: {
-        position: 'Pozice',
+        position: '#',
         type: 'Typ',
+        area: 'Pozice',
         actions: 'Akce',
       },
     },
