@@ -40,6 +40,7 @@ export default {
       add: 'Add new',
       delete: 'Delete',
       edit: 'Edit',
+      view: 'View',
       colName: {
         position: '#',
         type: 'Type',

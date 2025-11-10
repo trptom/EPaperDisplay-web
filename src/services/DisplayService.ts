@@ -8,7 +8,7 @@ export enum DisplayModuleType {
 }
 
 export type Display = {
-  id: string
+  id: number
   name: string
   token: string
   model: number
@@ -20,7 +20,7 @@ export type Display = {
   longitude: number
   ip_filter: boolean
   displayed: number
-  modules?: DisplayModule[]
+  modules: DisplayModule[]
 }
 
 export type DisplayModule = {
@@ -100,7 +100,13 @@ class DisplayService extends Service {
     const data = await this.fetchJSON(url, {
       method: 'GET',
     })
-    return data == null ? null : (data as Display)
+    const result = data == null ? null : (data as Display)
+    if (result) {
+      if (!result.modules) {
+        result.modules = []
+      }
+    }
+    return result
   }
 
   /**
@@ -110,9 +116,7 @@ class DisplayService extends Service {
    * @returns The image URL or an error.
    */
   public async getImage(display: Display | number): Promise<string> {
-    const url = this.getUrl(
-      '/display/' + (typeof display === 'number' ? display : display.id) + '/image',
-    )
+    const url = this.getImageUrl(display)
     const res = await fetch(url, { method: 'GET' })
     if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`)
     const blob = await res.blob()
@@ -120,6 +124,12 @@ class DisplayService extends Service {
       // optional: accept other image types or convert
     }
     return URL.createObjectURL(blob)
+  }
+
+  public getImageUrl(display: Display | number) {
+    return this.getUrl(
+      '/display/' + (typeof display === 'number' ? display : display.id) + '/image',
+    )
   }
 
   /**
@@ -133,13 +143,7 @@ class DisplayService extends Service {
     display: Display | number,
     module: DisplayModule | number,
   ): Promise<string> {
-    const url = this.getUrl(
-      '/display/' +
-        (typeof display === 'number' ? display : display.id) +
-        '/module/' +
-        (typeof module === 'number' ? module : module.position) +
-        '/image',
-    )
+    const url = this.getModuleImageUrl(display, module)
     const res = await fetch(url, { method: 'GET' })
     if (!res.ok) throw new Error(`Failed to fetch image: ${res.status}`)
     const blob = await res.blob()
@@ -147,6 +151,16 @@ class DisplayService extends Service {
       // optional: accept other image types or convert
     }
     return URL.createObjectURL(blob)
+  }
+
+  public getModuleImageUrl(display: Display | number, module: DisplayModule | number) {
+    return this.getUrl(
+      '/display/' +
+        (typeof display === 'number' ? display : display.id) +
+        '/module/' +
+        (typeof module === 'number' ? module : module.position) +
+        '/image',
+    )
   }
 }
 

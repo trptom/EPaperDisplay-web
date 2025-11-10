@@ -17,40 +17,50 @@ const route = useRoute()
 const idParam = computed(() => route.params.id as string | undefined)
 
 const display = ref<Display | null>(null)
-const modules = ref<DisplayModule[]>([])
+const activeModulePosition = ref<number | null>(null)
+const modules = computed<DisplayModule[]>(() => display.value?.modules ?? [])
+const activeModule = computed<DisplayModule | null>(() => {
+  if (!display.value || activeModulePosition.value === null) return null
+  return display.value.modules?.find((m) => m.position === activeModulePosition.value) ?? null
+})
+
 const loading = ref(false)
 const error = ref(false)
+
 const showImageModal = ref(false)
-const imageUrl = ref<string>('')
 const showModuleModal = ref(false)
-const moduleData = ref<DisplayModule | null>(null)
+
 const changed = ref(false)
 
-function openImageModal(url: string) {
-  imageUrl.value = DisplayService.getUrl(url)
-  showImageModal.value = true
+const imageUrl = ref<string>('')
+
+async function openImageModal(img: string | Promise<string>) {
+  if (typeof img !== 'string') {
+    img = await img
+  }
+
+  if (img) {
+    imageUrl.value = img
+    showImageModal.value = true
+  }
 }
 
-function openModuleModal(module: DisplayModule) {
-  moduleData.value = module
+function openModuleModal() {
   showModuleModal.value = true
 }
 
-function onModuleChanged(updated: DisplayModule | null) {
-  // Update modules list and display when the modal emits changes
-  if (!updated) return
+function setActiveModule(module: DisplayModule | null) {
+  activeModulePosition.value = module?.position ?? null
+}
 
-  const idx = modules.value.findIndex((m) => (m.position ?? -1) === (updated.position ?? -1))
+function onModuleChanged(module: DisplayModule) {
+  if (display.value == null || activeModulePosition.value == null) return
+
+  const idx = display.value.modules.findIndex((m) => m.position === module.position)
   if (idx >= 0) {
-    // replace the existing module with the updated one
-    modules.value.splice(idx, 1, updated)
-  } else {
-    // not found -> append
-    modules.value.push(updated)
+    display.value.modules.splice(idx, 1, module)
   }
 
-  if (display.value) display.value.modules = modules.value
-  moduleData.value = updated
   changed.value = true
 }
 
@@ -69,11 +79,6 @@ async function loadDisplay(id?: number) {
   try {
     const data = await DisplayService.get(id)
     display.value = data ?? null
-    if (display.value) {
-      // ensure modules array exists and sync
-      if (!Array.isArray(display.value.modules)) display.value.modules = []
-      modules.value = display.value.modules
-    }
   } catch (e: unknown) {
     console.error(e)
     error.value = true
@@ -82,40 +87,34 @@ async function loadDisplay(id?: number) {
   }
 }
 
-function viewDisplay() {
-  if (display.value) {
-    openImageModal(`/display/${display.value.id}/image`)
-  }
-}
+function updateModulesFromTable(module: DisplayModule, from: number, to: number) {
+  if (display.value == null) return
 
-function setModule(id: number): void {
-  if (display?.value?.modules) {
-    const mod: DisplayModule | undefined = display.value.modules.find(
-      (m) => (m.position ?? 0) === id,
-    )
-    if (mod) {
-      openModuleModal(mod)
-    }
-  }
-}
+  const modList = display.value.modules
+  if (from < 0 || from >= modList.length || to < 0 || to >= modList.length) return
 
-function syncRectangles(r: DisplayModule[]): void {
-  modules.value = r
-  if (display.value) {
-    display.value.modules = r
-  }
-}
-
-function updateModulesFromTable(r: DisplayModule[]) {
-  modules.value = r
-  if (display.value) display.value.modules = r
   changed.value = true
+
+  // Move module in array from => to.
+  const [movedModule] = modList.splice(from, 1)
+  if (movedModule) {
+    modList.splice(to, 0, movedModule)
+  }
+
+  // Reassign positions to match new order (1-based)
+  for (let i = 0; i < modList.length; i++) {
+    modList[i]!.position = i + 1
+  }
 }
 
 function addModule() {
+  if (display.value == null) return
+
   // create a default module object with next position
   const pos =
-    modules.value.length > 0 ? Math.max(...modules.value.map((m) => m.position ?? 0)) + 1 : 1
+    display.value.modules.length > 0
+      ? Math.max(...modules.value.map((m) => m.position ?? 0)) + 1
+      : 1
   const data: ModuleData_SimpleText = {
     text: '',
     alignment_x: 'left',
@@ -133,20 +132,28 @@ function addModule() {
     border: 0,
     data: data,
   }
-  modules.value.push(m)
-  if (display.value) display.value.modules = modules.value
+
+  display.value.modules.push(m)
+
   changed.value = true
 }
 
-function removeModule(pos: number) {
-  const idx = modules.value.findIndex((m) => (m.position ?? -1) === pos)
+function removeModule(module: DisplayModule) {
+  if (display.value == null) return
+
+  const idx = display.value.modules.findIndex((m) => (m.position ?? -1) === (module.position ?? -1))
   if (idx >= 0) {
-    modules.value.splice(idx, 1)
-    // reassign positions to maintain stable positions (optional)
-    modules.value = modules.value.map((m, i) => ({ ...m, position: i + 1 }))
-    if (display.value) display.value.modules = modules.value
+    display.value.modules.splice(idx, 1)
     changed.value = true
   }
+}
+
+async function save() {
+  if (display.value == null) return
+
+  //const result = await DisplayService.set(display.value);
+
+  changed.value = false
 }
 
 onMounted(() => {
@@ -169,7 +176,8 @@ onMounted(() => {
       <div>
         <button
           class="btn btn-outline-secondary me-2"
-          @click="viewDisplay"
+          @click="() => openImageModal(DisplayService.getImageUrl(display!))"
+          :disabled="changed"
           v-if="display != null && !error && !loading"
         >
           <i class="bi bi-arrow-clockwise"></i>
@@ -177,8 +185,8 @@ onMounted(() => {
         </button>
         <button
           class="btn btn-primary me-2"
-          @click="viewDisplay"
           :disabled="!changed"
+          @click="save"
           v-if="display != null && !error && !loading"
         >
           <i class="bi bi-arrow-clockwise"></i>
@@ -234,31 +242,43 @@ onMounted(() => {
         </div>
       </div>
       <ModuleListTable
-        :modules="modules"
-        @update:modules="updateModulesFromTable"
-        @add-module="addModule"
-        @remove-module="removeModule"
-        @edit-module="setModule"
+        :display="display"
+        :view-enabled="!changed"
+        @add-clicked="addModule"
+        @module-moved="updateModulesFromTable"
+        @module-remove-clicked="removeModule"
+        @module-edit-clicked="
+          (module: DisplayModule) => {
+            setActiveModule(module)
+            openModuleModal()
+          }
+        "
+        @module-view-clicked="
+          (module: DisplayModule) => {
+            openImageModal(DisplayService.getModuleImageUrl(display!.id, module.position))
+          }
+        "
       />
 
       <div class="card d-flex flex-row justify-content-center align-items-center mb-3">
         <div class="display">
-          <DisplayComponent
-            :modules="modules"
-            :width="display?.width"
-            :height="display?.height"
-            @update:rectangles="syncRectangles"
-            @rect-clicked="setModule"
-          />
+          <DisplayComponent :display="display" :width="display?.width" :height="display?.height" />
         </div>
       </div>
     </div>
     <ImageModal v-model="showImageModal" :imageUrl="imageUrl" title="Preview Image" />
     <DisplayModuleSettingsModal
       v-model="showModuleModal"
-      :module="moduleData"
+      :module="activeModule"
       title="Module Settings"
-      @changed="onModuleChanged"
+      @closed="
+        (module: DisplayModule | null) => {
+          if (module) {
+            onModuleChanged(module)
+          }
+          showModuleModal = false
+        }
+      "
     />
   </div>
 </template>

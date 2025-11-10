@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { DisplayModule } from '@/services/DisplayService'
+import type { Display, DisplayModule } from '@/services/DisplayService'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
 const props = defineProps<{
-  modules: DisplayModule[]
+  display: Display
+  viewEnabled: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modules', val: DisplayModule[]): void
-  (e: 'add-module'): void
-  (e: 'remove-module', pos: number): void
-  (e: 'edit-module', id: number, module: DisplayModule): void
+  (e: 'add-clicked'): void
+  (e: 'module-moved', module: DisplayModule, from: number, to: number): void
+  (e: 'module-remove-clicked', module: DisplayModule): void
+  (e: 'module-edit-clicked', module: DisplayModule): void
+  (e: 'module-view-clicked', module: DisplayModule): void
 }>()
 
 const dragIndex = ref<number | null>(null)
@@ -33,7 +35,7 @@ function onDrop(e: DragEvent, idx: number) {
   const from = dragIndex.value ?? parseInt(e.dataTransfer?.getData('text/plain') ?? '-1', 10)
   const to = idx
   if (from < 0 || from === to) return
-  const copy = props.modules.slice()
+  const copy = props.display.modules.slice()
   const [item] = copy.splice(from, 1)
   if (!item) return
   copy.splice(to, 0, item)
@@ -42,20 +44,24 @@ function onDrop(e: DragEvent, idx: number) {
     // mutate copy items' position to match order (cast to DisplayModule to satisfy types)
     copy[i] = { ...(copy[i] as DisplayModule), position: i + 1 }
   }
-  emit('update:modules', copy)
+  emit('module-moved', item, from, to)
   dragIndex.value = null
 }
 
 function addModule() {
-  emit('add-module')
+  emit('add-clicked')
 }
 
-function removeModule(pos: number) {
-  emit('remove-module', pos)
+function removeModule(moduleObj: DisplayModule) {
+  emit('module-remove-clicked', moduleObj)
 }
 
-function editModule(id: number, moduleObj: DisplayModule) {
-  emit('edit-module', id, moduleObj)
+function editModule(moduleObj: DisplayModule) {
+  emit('module-edit-clicked', moduleObj)
+}
+
+function viewModule(moduleObj: DisplayModule) {
+  emit('module-view-clicked', moduleObj)
 }
 </script>
 
@@ -80,7 +86,7 @@ function editModule(id: number, moduleObj: DisplayModule) {
         </thead>
         <tbody>
           <tr
-            v-for="(m, idx) in modules"
+            v-for="(m, idx) in display.modules"
             :key="m.position ?? idx"
             draggable="true"
             @dragstart="onDragStart($event, idx)"
@@ -91,21 +97,22 @@ function editModule(id: number, moduleObj: DisplayModule) {
             <td>{{ t(`general.moduleTypes.${m.type}`) }}</td>
             <td>{{ `${m.x};${m.y}, ${m.width}x${m.height}` }}</td>
             <td>
-              <button
-                class="btn btn-sm btn-outline-secondary me-1"
-                @click="editModule(m.position ?? idx, m)"
-              >
+              <button class="btn btn-sm btn-outline-secondary me-1" @click="editModule(m)">
                 {{ t('components.moduleListTable.edit') }}
               </button>
               <button
-                class="btn btn-sm btn-outline-danger"
-                @click="removeModule(m.position ?? idx)"
+                class="btn btn-sm btn-outline-secondary me-1"
+                @click="viewModule(m)"
+                :disabled="!viewEnabled"
               >
+                {{ t('components.moduleListTable.view') }}
+              </button>
+              <button class="btn btn-sm btn-outline-danger" @click="removeModule(m)">
                 {{ t('components.moduleListTable.delete') }}
               </button>
             </td>
           </tr>
-          <tr v-if="modules.length === 0">
+          <tr v-if="display.modules.length === 0">
             <td colspan="4" class="text-muted">{{ t('components.moduleListTable.noModules') }}</td>
           </tr>
         </tbody>

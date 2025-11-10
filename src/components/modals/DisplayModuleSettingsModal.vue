@@ -44,9 +44,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', v: boolean): void
-  (e: 'update:module', v: DisplayModule | null): void
-  (e: 'changed', v: DisplayModule | null): void
+  (e: 'closed', module: DisplayModule | null): void
 }>()
 
 const modalEl = ref<HTMLElement | null>(null)
@@ -64,9 +62,7 @@ function cloneModule(m: DisplayModule | null): DisplayModule | null {
 onMounted(() => {
   if (!modalEl.value) return
   modalInstance = new Modal(modalEl.value, { backdrop: true })
-  modalEl.value.addEventListener('hidden.bs.modal', () => {
-    emit('update:modelValue', false)
-  })
+  modalEl.value.addEventListener('hidden.bs.modal', () => {})
   if (props.modelValue) {
     modalInstance.show()
   }
@@ -81,6 +77,7 @@ watch(
   () => props.modelValue,
   (v) => {
     if (!modalInstance) return
+    if (!props.module) return
     if (v) {
       // when opening, populate local copy from prop
       localModule.value = cloneModule(props.module)
@@ -100,18 +97,8 @@ watch(
   { deep: true },
 )
 
-// Emit changes when localModule mutates. We use a deep watch to detect any change
-watch(
-  localModule,
-  (newVal) => {
-    emit('update:module', cloneModule(newVal))
-    emit('changed', cloneModule(newVal))
-  },
-  { deep: true },
-)
-
 function close() {
-  emit('update:modelValue', false)
+  emit('closed', localModule.value)
 }
 </script>
 
@@ -190,7 +177,7 @@ function close() {
               />
             </div>
 
-            <template v-if="localModule.type === DisplayModuleType.StaticImage">
+            <template v-if="localModule?.type === DisplayModuleType.StaticImage">
               <div class="input-group mb-3">
                 <label class="input-group-text" for="displaymodulesettingsmodal-staticimage-url">{{
                   t('modal.displayModule.staticImage.url')

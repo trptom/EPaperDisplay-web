@@ -40,6 +40,7 @@ export default {
       add: 'Přidat',
       delete: 'Smazat',
       edit: 'Upravit',
+      view: 'Náhled',
       colName: {
         position: '#',
         type: 'Typ',

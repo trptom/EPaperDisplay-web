@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { DisplayModuleType, type DisplayModule } from '@/services/DisplayService'
+import { DisplayModuleType, type Display, type DisplayModule } from '@/services/DisplayService'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps<{
-  modules: DisplayModule[]
+  display: Display
   width?: number
   height?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modules', val: DisplayModule[]): void
-  (e: 'rectClicked', id: number, rect: DisplayModule): void
+  (e: 'module-changed', module: DisplayModule): void
+  (e: 'module-clicked', module: DisplayModule): void
 }>()
 
 // container ref and style
@@ -49,19 +52,7 @@ function moduleBG(m: DisplayModule) {
 }
 
 function moduleText(m: DisplayModule) {
-  const result = `[${m.position}]`
-  switch (m.type) {
-    case DisplayModuleType.StaticImage:
-      return `${result} Static Image`
-    case DisplayModuleType.SimpleText:
-      return `${result} Simple Text`
-    case DisplayModuleType.Weather:
-      return `${result} Weather`
-    case DisplayModuleType.Calendar:
-      return `${result} Calendar`
-    default:
-      return 'Unknown Module'
-  }
+  return `[${m.position}] ${t('general.moduleTypes.' + m.position)}`
 }
 
 function moduleStyle(r: DisplayModule) {
@@ -166,10 +157,10 @@ function onPointerMove(e: PointerEvent) {
   if (action === 'drag') {
     targetRect.x = Math.max(0, Math.round(startRect.x + dx))
     targetRect.y = Math.max(0, Math.round(startRect.y + dy))
-    sync()
+    sync(targetRect)
   } else if (action === 'resize') {
     applyResize(targetRect, startRect, currentHandle, dx, dy)
-    sync()
+    sync(targetRect)
   }
 }
 
@@ -220,9 +211,9 @@ function onPointerUp(e: PointerEvent) {
   window.removeEventListener('pointerup', onPointerUp)
 }
 
-function sync() {
+function sync(module: DisplayModule) {
   // emit update to allow parent to react if using v-model:modules or listen
-  emit('update:modules', props.modules)
+  emit('module-changed', module)
 }
 
 function onRectClick(rect: DisplayModule, idx: number) {
@@ -232,7 +223,7 @@ function onRectClick(rect: DisplayModule, idx: number) {
   // ensure we provide a numeric id as requested; fall back to index
   let idNum = Number(rect.position ?? idx)
   if (Number.isNaN(idNum)) idNum = idx
-  emit('rectClicked', idNum, rect)
+  emit('module-clicked', rect)
 }
 
 // cleanup
@@ -243,7 +234,7 @@ onBeforeUnmount(() => {
 
 // ensure modules array is watched and kept as source of truth; we mutate objects directly
 watch(
-  () => props.modules,
+  () => props.display.modules,
   () => {},
   { deep: true },
 )
@@ -252,7 +243,7 @@ watch(
 <template>
   <div class="display-root" :style="containerStyle" ref="root">
     <div
-      v-for="(module, idx) in modules"
+      v-for="(module, idx) in display.modules"
       :key="module.position ?? idx"
       class="rect"
       :style="moduleStyle(module)"
