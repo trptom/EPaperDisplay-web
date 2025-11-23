@@ -39,7 +39,7 @@ onMounted(load)
   <div v-else-if="error || dashboard == null" class="alert alert-danger">
     {{ t('privateDashboard.error') }}
   </div>
-  <div v-if="!dashboard" class="alert alert-info">{{ t('privateDashboard.empty') }}</div>
+  <div v-else-if="!dashboard" class="alert alert-info">{{ t('privateDashboard.empty') }}</div>
 
   <div v-else class="table-responsive">
     <table class="table table-striped table-hover align-middle">
