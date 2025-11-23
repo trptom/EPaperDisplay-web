@@ -66,49 +66,10 @@ function moduleStyle(r: DisplayModule) {
   } as Record<string, string>
 }
 
-// Compute inline style for the inner text block so that one of its
-// dimensions (width or height) equals 50% of the container (root)
-// and the other dimension preserves the text's aspect ratio.
 function innerStyle(r: DisplayModule) {
-  // container size (props.width/height) defaulted like containerStyle
-  const cW = props.width ?? 480
-  const cH = props.height ?? 800
-
-  // desired max dimension is 50% of container
-  const targetW = Math.round(cW * 0.5)
-  const targetH = Math.round(cH * 0.5)
-
-  // compute aspect ratio of the rect's box (width/height)
-  const rectAR = r.width / r.height || 1
-
-  // We want one of the inner dimensions to equal targetW or targetH
-  // Choose which dimension to fix by comparing target aspect ratios
-  // If rect is wider than tall (ar>1), prefer width = targetW, else height = targetH.
-  let w: number
-  let h: number
-
-  if (rectAR >= 1) {
-    // fix width, scale height to preserve rectAR
-    w = targetW
-    h = Math.round(w / rectAR)
-    // ensure it doesn't exceed targetH
-    if (h > targetH) {
-      h = targetH
-      w = Math.round(h * rectAR)
-    }
-  } else {
-    // fix height, scale width
-    h = targetH
-    w = Math.round(h * rectAR)
-    if (w > targetW) {
-      w = targetW
-      h = Math.round(w / rectAR)
-    }
-  }
-
   return {
-    width: w + 'px',
-    height: h + 'px',
+    width: r.width + 'px',
+    height: r.height + 'px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
