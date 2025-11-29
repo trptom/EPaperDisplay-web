@@ -44,7 +44,6 @@ watch(
   (v) => {
     if (!modalInstance) return
     if (v) {
-      loading.value = true
       modalInstance.show()
     } else {
       modalInstance.hide()
@@ -84,7 +83,7 @@ function close() {
           <!-- Always render the image so the browser requests the URL; keep it visually hidden while loading -->
           <img
             :src="props.imageUrl"
-            alt="Preview"
+            :alt="`Preview of ${props.imageUrl}`"
             class="img-fluid"
             :class="{ invisible: loading }"
             @load="onLoad"
