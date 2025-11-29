@@ -62,7 +62,18 @@ function cloneModule(m: DisplayModule | null): DisplayModule | null {
 onMounted(() => {
   if (!modalEl.value) return
   modalInstance = new Modal(modalEl.value, { backdrop: true })
-  modalEl.value.addEventListener('hidden.bs.modal', () => {})
+  // Emit 'closed' when backdrop/outside click (Bootstrap triggers hide)
+  modalEl.value.addEventListener('hide.bs.modal', () => {
+    if (!userInitiatedClose.value) {
+      emit('closed', localModule.value)
+    }
+    // reset flag after any hide
+    userInitiatedClose.value = false
+  })
+  // Clean reset after fully hidden as well (defensive)
+  modalEl.value.addEventListener('hidden.bs.modal', () => {
+    userInitiatedClose.value = false
+  })
   if (props.modelValue) {
     modalInstance.show()
   }
@@ -98,8 +109,13 @@ watch(
 )
 
 function close() {
+  // Mark as user initiated so the hide event does not emit twice
+  userInitiatedClose.value = true
   emit('closed', localModule.value)
 }
+
+// Track if we already emitted in this close cycle to avoid duplicates
+const userInitiatedClose = ref(false)
 </script>
 
 <template>
