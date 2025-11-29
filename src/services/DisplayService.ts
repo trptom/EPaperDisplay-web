@@ -14,10 +14,10 @@ export type Display = {
   model: number
   width: number
   height: number
-  language: string
-  timezone: string
-  latitude: number
-  longitude: number
+  language: string | null
+  timezone: string | null
+  latitude: number | null
+  longitude: number | null
   ip_filter: boolean
   displayed: number
   modules: DisplayModule[]
@@ -90,7 +90,7 @@ class DisplayService extends Service {
   }
 
   /**
-   * Reads information about all displays of current user.
+   * Reads information about specified display.
    * @returns The display information or null when failed.
    */
   public async get(display: Display | number) {
@@ -107,6 +107,22 @@ class DisplayService extends Service {
       }
     }
     return result
+  }
+
+  /**
+   * Writes display to server.
+   * @returns True on success, false on failure.
+   */
+  public async set(display: Display | number) {
+    const url = this.getUrl(
+      '/display/' + (typeof display === 'number' ? display : display.id) + '/set',
+    )
+    const data = await this.fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(display),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    return data.ok
   }
 
   /**
