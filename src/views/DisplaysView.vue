@@ -52,7 +52,7 @@ onMounted(() => {
         <h1 class="mb-0">{{ t('displays.header') }}</h1>
         <small class="text-muted">{{ t('displays.subheader') }}</small>
       </div>
-      <div>
+      <div class="d-flex justify-content-end">
         <button class="btn btn-outline-secondary me-2" @click="addDisplay" :disabled="loading">
           <i class="bi bi-arrow-clockwise"></i>
           {{ t('displays.add') }}

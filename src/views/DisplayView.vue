@@ -8,6 +8,7 @@ import { useI18n } from 'vue-i18n'
 import type { Display, DisplayModule, ModuleData_SimpleText } from '@/services/DisplayService'
 import DisplayService, { DisplayModuleType } from '@/services/DisplayService'
 import DisplayModuleSettingsModal from '@/components/modals/DisplayModuleSettingsModal.vue'
+import { showErrorToast } from '@/lib/Toast'
 
 const { t } = useI18n()
 
@@ -33,6 +34,13 @@ const showModuleModal = ref(false)
 const changed = ref(false)
 
 const imageUrl = ref<string>('')
+
+function onModuleEditClosed(module: DisplayModule | null) {
+  if (module) {
+    onModuleChanged(module)
+  }
+  showModuleModal.value = false
+}
 
 async function openImageModal(img: string | Promise<string>) {
   if (typeof img !== 'string') {
@@ -151,9 +159,14 @@ function removeModule(module: DisplayModule) {
 async function save() {
   if (display.value == null) return
 
-  //const result = await DisplayService.set(display.value);
+  const result = await DisplayService.set(display.value)
 
-  changed.value = false
+  if (!result) {
+    showErrorToast(t('display.saveError'))
+    return
+  } else {
+    changed.value = false
+  }
 }
 
 onMounted(() => {
@@ -173,7 +186,7 @@ onMounted(() => {
           {{ `${t('display.subheader.token')}: ${display?.token}` }}
         </div>
       </div>
-      <div>
+      <div class="d-flex justify-content-end">
         <button
           class="btn btn-outline-secondary me-2"
           @click="() => openImageModal(DisplayService.getImageUrl(display!))"
@@ -262,7 +275,12 @@ onMounted(() => {
 
       <div class="card d-flex flex-row justify-content-center align-items-center mb-3">
         <div class="display">
-          <DisplayComponent :display="display" :width="display?.width" :height="display?.height" />
+          <DisplayComponent
+            :display="display"
+            :width="display?.width"
+            :height="display?.height"
+            @module-changed="changed = true"
+          />
         </div>
       </div>
     </div>
@@ -271,14 +289,7 @@ onMounted(() => {
       v-model="showModuleModal"
       :module="activeModule"
       title="Module Settings"
-      @closed="
-        (module: DisplayModule | null) => {
-          if (module) {
-            onModuleChanged(module)
-          }
-          showModuleModal = false
-        }
-      "
+      @closed="onModuleEditClosed"
     />
   </div>
 </template>
