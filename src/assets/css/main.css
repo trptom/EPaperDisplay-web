@@ -1,6 +1,14 @@
 @import url(defs.css);
 
+.navbar > .container-fluid {
+  /* Must be 'min-height' instead of 'height' because on mobile devices
+     navbar height can vary based on whether the navbar is expanded
+     or collapsed. */
+  min-height: var(--navbar-container-height);
+}
+
 .container {
+  margin-top: var(--container-top-offset);
   max-width: 960px;
 }
 

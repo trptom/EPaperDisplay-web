@@ -1,3 +1,7 @@
 :root {
-  --navbar-height: 56px;
+  --navbar-container-height: 50px;
+  --navbar-height: calc(var(--bs-navbar-padding-y) * 2 + var(--navbar-container-heigh));
+
+  --container-offset: 20px;
+  --container-top-offset: calc(var(--container-offset) + var(--navbar-height));
 }

@@ -112,11 +112,6 @@ watch(
   display: inline-block;
 }
 
-/* small tweak to make the navbar height predictable */
-.navbar {
-  height: var(--navbar-height);
-}
-
 /* provider buttons and icon sizing */
 .provider-btn {
   display: inline-flex;
@@ -133,7 +128,17 @@ watch(
 }
 .fi {
   height: 21px;
-  width: 28px;
+  width: 27px;
   margin-left: 10px;
+}
+
+/* Small navbar. */
+@media (max-width: 991px) {
+  .fi {
+    margin-top: 20px;
+  }
+  .fi:nth-child(3) {
+    margin-left: 0;
+  }
 }
 </style>
