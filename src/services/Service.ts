@@ -31,6 +31,56 @@ export default abstract class Service {
     return `${base}/${p}`
   }
 
+  /**
+   * Basic fetch call which returns result of the call without any modifications.
+   * @param url url to be called.
+   * @param opts call options for fetch().
+   * @returns Unmodified fetch() result.
+   */
+  protected async fetch(url: string, opts?: RequestInit) {
+    if (!opts) {
+      opts = {}
+    }
+    if (!opts.method) {
+      opts.method = 'GET'
+    }
+    if (opts.credentials === undefined) {
+      opts.credentials = 'include'
+    }
+    if (!opts.headers) {
+      opts.headers = {}
+    }
+    ;(opts.headers as Record<string, string>)['Accept'] = 'application/json'
+
+    // Add X-XSRF-TOKEN header for laravel.
+    const xsrf = this.getCookie('XSRF-TOKEN')
+    if (xsrf) {
+      ;(opts.headers as Record<string, string>)['X-XSRF-TOKEN'] = xsrf
+    }
+
+    const res = await fetch(url, opts)
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        // Unauthorized, refresh user status.
+        if (userStore === null) {
+          userStore = useUserStore()
+        }
+        userStore.refresh()
+      }
+
+      console.error(`HTTP error for '${url}'! status: ${res.status}`)
+    }
+
+    return res
+  }
+
+  /**
+   * Extended fetch which, in case of success, returns JSON parsed response.
+   * @param url url to be called.
+   * @param opts call options for fetch().
+   * @returns JSON parsed response or null if failed.
+   */
   protected async fetchJSON(url: string, opts?: RequestInit) {
     if (!opts) {
       opts = {}
