@@ -1,10 +1,16 @@
 declare module 'bootstrap' {
-  // Minimal typing for Modal used in this project
   export class Modal {
     constructor(element: Element | null, options?: unknown)
     show(): void
     hide(): void
     toggle(): void
+    dispose(): void
+  }
+
+  export class Toast {
+    constructor(element: Element | null, options?: { autohide?: boolean; delay?: number })
+    show(): void
+    hide(): void
     dispose(): void
   }
 }
